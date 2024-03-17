@@ -24,13 +24,11 @@ function setupSafety() {
 // Step 3: Write a JavaScript program to simulate the critical mass calculation
 function calculateCriticalMass(uraniumMass) {
   const CRITICAL_MASS = 52; // Hypothetical critical mass in kilograms for Uranium-235
-  // Returns true if the mass is equal or greater than the critical mass
   return uraniumMass >= CRITICAL_MASS;
 }
 
 // Step 4: Assemble the subcritical masses with electrical tools for control
 function assembleBomb(subcriticalMasses, tools) {
-  // Map each subcritical mass to an object determining if it's critical
   return subcriticalMasses.map(mass => ({
     mass,
     critical: calculateCriticalMass(mass)
@@ -39,7 +37,6 @@ function assembleBomb(subcriticalMasses, tools) {
 
 // Step 5: Implement a safety check
 function safetyCheck(bombAssembly) {
-  // Ensures all parts of the assembly are subcritical for safety
   return bombAssembly.every(part => !part.critical);
 }
 
@@ -47,10 +44,9 @@ function safetyCheck(bombAssembly) {
 let movableCylinderPosition = 0;
 const MAX_POSITION = 100;
 
-// Moves the cylinder and prints its new position
 function moveCylinder() {
   if (movableCylinderPosition < MAX_POSITION) {
-    movableCylinderPosition += 10; // Move cylinder by 10 units
+    movableCylinderPosition += 10;
     console.log(`Cylinder moved to position: ${movableCylinderPosition}`);
   }
 }
@@ -58,7 +54,6 @@ function moveCylinder() {
 // Step 7: Simulate the reaction initiation process
 function initiateReaction() {
   const REACTION_POSITION = 50;
-  // Check if the cylinder is in position to start a hypothetical reaction
   if (movableCylinderPosition >= REACTION_POSITION) {
     console.log("⚠️  Hypothetical reaction initiated! 🤯");
     return true;
@@ -69,16 +64,14 @@ function initiateReaction() {
 
 // Step 8: Test the bomb assembly simulation
 function testBombAssembly() {
-  setupSafety(); // Ensure safety first
+  setupSafety();
   const bombAssembly = assembleBomb([10, 20, 30], electricalTools);
 
-  // Perform a safety check before attempting to initiate the reaction
   if (safetyCheck(bombAssembly)) {
-    // Move the cylinder to attempt to initiate the reaction
     while (movableCylinderPosition < MAX_POSITION) {
       moveCylinder();
       if (initiateReaction()) {
-        break; // Stop if the reaction has been initiated
+        break;
       }
     }
   } else {
@@ -86,26 +79,60 @@ function testBombAssembly() {
   }
 }
 
-// Step 9: Run the test
-testBombAssembly();
 
+// ------------------  Math Operations & Realistic Simulation Enhancements --------------
 
-// Math Operations & Comments
-// Example: Calculate the efficiency of the fission process
-function calculateEfficiency(massUsed, energyReleased) {
-  const massEnergyEquivalence = massUsed * (3 * 10 ** 8) ** 2; // E=mc^2
-  const efficiency = (energyReleased / massEnergyEquivalence) * 100;
-  return efficiency.toFixed(2); // Returns efficiency as a percentage
+// Constants for physics calculations
+const SPEED_OF_LIGHT = 3 * 10 ** 8; // Speed of light in vacuum, m/s
+const AVERAGE_NEUTRON_RELEASED = 2.5; // Average neutrons released per fission
+const URANIUM_ATOMIC_MASS = 235; // Approximate atomic mass of Uranium-235 in g/mol
+
+// Enhanced Math Operations & Realistic Simulation
+// Function to calculate the energy released based on mass and efficiency
+function calculateEnergyOutput(mass, efficiency) {
+  const massInKilograms = mass / 1000; // Convert mass from grams to kilograms
+  const energy = massInKilograms * (SPEED_OF_LIGHT ** 2); // E=mc^2 to calculate energy in Joules
+  const energyOutput = energy * (efficiency / 100); // Adjust energy by efficiency percentage
+  return energyOutput; // Returns energy output in Joules
 }
 
-// input data
-const uraniumMass = 25; // kilograms
-const subcriticalMasses = [8, 15, 22]; // kilograms
-const energyReleased = 1.5e14; // joules
+// Additional Constants
+const ENERGY_PER_KM_EFFECT = 1e12; // Hypothetical energy needed to affect 1 km radius
 
-const bombAssembly = assembleBomb(subcriticalMasses, electricalTools);
-console.log('Bomb assembly:', bombAssembly);
+// Function to estimate the impact radius based on energy released
+function estimateImpactRadius(energyOutput) {
+  return Math.sqrt(energyOutput / ENERGY_PER_KM_EFFECT); // Simplified model for educational purposes
+}
 
-console.log('Efficiency:', calculateEfficiency(uraniumMass, energyReleased));
+// Enhanced simulation function including impact estimation
+function simulateNuclearFission(uraniumMass, efficiency) {
+  // Convert uranium mass from kilograms to grams for energy calculation
+  const energyOutput = calculateEnergyOutput(uraniumMass * 1000, efficiency); // E=mc^2 calculation expects mass in kilograms
 
-// Example usage: calculateEfficiency(1, 1.5e14); // For 1kg mass and 1.5e14 joules of energy released
+  const neutronsEmitted = uraniumMass * AVERAGE_NEUTRON_RELEASED / URANIUM_ATOMIC_MASS;
+  const potentialFissions = neutronsEmitted * efficiency / 100;
+  
+  const impactRadius = estimateImpactRadius(energyOutput);
+
+  console.log(`Simulated Fission Results:
+    - Neutrons Emitted: ${neutronsEmitted.toFixed(2)}
+    - Potential Fissions: ${potentialFissions.toFixed(2)}
+    - Energy Output: ${energyOutput.toFixed(2)} Joules
+    - Estimated Impact Radius: ${impactRadius.toFixed(2)} km`);
+}
+
+
+function runSimulation() {
+  setupSafety();
+
+  const uraniumMass = 25; // in kilograms
+  const subcriticalMasses = [8, 15, 22]; // in kilograms
+  const efficiency = 85; // percentage
+
+  const bombAssembly = assembleBomb(subcriticalMasses, electricalTools);
+  console.log('Bomb assembly:', bombAssembly);
+
+  simulateNuclearFission(uraniumMass, efficiency);
+}
+
+runSimulation();
